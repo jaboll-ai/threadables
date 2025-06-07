@@ -52,11 +52,11 @@ def enqueuer(queue: Queue, iterator: Iterator, filter_func: Callable, n_workers:
         if n is not None and i >= n:
             break
         if kill_event and kill_event.is_set():
-            print(f"{__clrd("Enqueuer", "magenta")} {__clrd("killed", "red")}")
+            print(f"{__clrd('Enqueuer', 'magenta')} {__clrd('killed', 'red')}")
             return
     for _ in range(n_workers):
         queue.put(None)  # Sentinels to stop workers
-    print(f"{__clrd("Enqueuer", "magenta")} {__clrd("exited gracefully", "green")}")
+    print(f"{__clrd('Enqueuer', 'magenta')} {__clrd('exited gracefully', 'green')}")
     
     
 def worker(queue: Queue, func: Callable, exit_func: Callable=None, kill_event: threading.Event = None):
@@ -79,11 +79,11 @@ def worker(queue: Queue, func: Callable, exit_func: Callable=None, kill_event: t
             if exit_func is not None: exit_func()
             break
         if kill_event and kill_event.is_set():
-            print(f"{__clrd("Worker", "yellow")}{__clrd(f"<{func.__name__}>", "yellow", "dim")} {__clrd("killed", "red")}")
+            print(f"{__clrd('Worker', 'yellow')}{__clrd(f'<{func.__name__}>', 'yellow', 'dim')} {__clrd('killed', 'red')}")
             return
         func(result)
         queue.task_done()
-    print(f"{__clrd("Worker", "yellow")}{__clrd(f"<{func.__name__}>", "yellow", "dim")} {__clrd("exited gracefully", "green")}")
+    print(f"{__clrd('Worker', 'yellow')}{__clrd(f'<{func.__name__}>', 'yellow', 'dim')} {__clrd('exited gracefully', 'green')}")
     
 
 class Enqueuer(threading.Thread):
