@@ -1,3 +1,12 @@
+"""
+threadables: A minimal producer-consumer threading toolkit with graceful shutdowns.
+
+Provides:
+- Enqueuer: A thread class for feeding a queue from an iterator.
+- Worker: A thread class for consuming items from a queue.
+- Colorized console output for lifecycle events.
+"""
+
 from collections.abc import Callable
 from typing import Iterator
 import threading
