@@ -15,7 +15,7 @@ A lightweight Python utility for parallelizing producer-consumer workflows using
 - Download files and put into your project or use:
 
 ```bash
-git add submodule https://github.com/jaboll-ai/threadables.git
+git submodule add https://github.com/jaboll-ai/threadables.git
 ```
 - For coloued output:
 ```bash
