@@ -17,7 +17,7 @@ A lightweight Python utility for parallelizing producer-consumer workflows using
 ```bash
 git submodule add https://github.com/jaboll-ai/threadables.git
 ```
-- For coloued output:
+- For coloured output:
 ```bash
 pip install colorama
 ```
