@@ -10,7 +10,7 @@ Provides:
 from collections.abc import Callable
 from typing import Iterator
 import threading
-from queue import Queue
+from queue import Queue, Empty, Full
 
 try:
     from colorama import Style, Fore
@@ -44,16 +44,24 @@ def enqueuer(queue: Queue, iterator: Iterator, filter_func: Callable, n_workers:
                        enqueuer to exit early.
     """
     i = 0
-    for file in iterator:
+    iterator = iter(iterator)
+    file = next(iterator)
+    while True:
         if not filter_func(file):
             continue
-        queue.put(file)
-        i += 1
-        if n is not None and i >= n:
-            break
         if kill_event and kill_event.is_set():
             print(f"{__clrd('Enqueuer', 'magenta')} {__clrd('killed', 'red')}")
             return
+        try:
+            queue.put(file, timeout=10)
+        except Full: continue
+        i += 1
+        if n is not None and i >= n:
+            break
+        try:
+            file = next(iterator)
+        except StopIteration:
+            break
     for _ in range(n_workers):
         queue.put(None)  # Sentinels to stop workers
     print(f"{__clrd('Enqueuer', 'magenta')} {__clrd('exited gracefully', 'green')}")
@@ -74,13 +82,16 @@ def worker(queue: Queue, func: Callable, exit_func: Callable=None, kill_event: t
                        worker to exit early.
     """
     while True:
-        result = queue.get()
-        if result is None:
-            if exit_func is not None: exit_func()
-            break
         if kill_event and kill_event.is_set():
             print(f"{__clrd('Worker', 'yellow')}{__clrd(f'<{func.__name__}>', 'yellow', 'dim')} {__clrd('killed', 'red')}")
             return
+        try:
+            result = queue.get(timeout=10)
+        except Empty:
+            continue
+        if result is None:
+            if exit_func is not None: exit_func()
+            break
         func(result)
         queue.task_done()
     print(f"{__clrd('Worker', 'yellow')}{__clrd(f'<{func.__name__}>', 'yellow', 'dim')} {__clrd('exited gracefully', 'green')}")
