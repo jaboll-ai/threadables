@@ -12,16 +12,19 @@ from typing import Iterator
 import threading
 from queue import Queue, Empty, Full
 
+COLORAMA_WARNING = True
+
 try:
     from colorama import Style, Fore
 except ImportError:
-    class Style: RESET_ALL = ''
-    class Fore:
-        RED = GREEN = YELLOW = MAGENTA = ''
+    print("colorama is not installed. Install with 'pip install colorama'\nDisable warning with 'threadables.COLORAMA_WARNING = False'")
 
 def __clrd(text, color:str, style:str = "normal"):
-    c = getattr(Fore, color.upper())
-    s = getattr(Style, style.upper())
+    try:
+        c = getattr(Fore, color.upper())
+        s = getattr(Style, style.upper())
+    except AttributeError:
+        return text
     return f"{c}{s}{text}{Style.RESET_ALL}"
         
 def enqueuer(queue: Queue, iterator: Iterator, filter_func: Callable, n_workers: int, n:int =None, kill_event: threading.Event = None):
