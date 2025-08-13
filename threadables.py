@@ -50,17 +50,16 @@ def enqueuer(queue: Queue, iterator: Iterator, filter_func: Callable, n_workers:
     iterator = iter(iterator)
     file = next(iterator)
     while True:
-        if not filter_func(file):
-            continue
-        if kill_event and kill_event.is_set():
-            print(f"{__clrd('Enqueuer', 'magenta')} {__clrd('killed', 'red')}")
-            return
-        try:
-            queue.put(file, timeout=10)
-        except Full: continue
-        i += 1
-        if n is not None and i >= n:
-            break
+        if filter_func(file):
+            if kill_event and kill_event.is_set():
+                print(f"{__clrd('Enqueuer', 'magenta')} {__clrd('killed', 'red')}")
+                return
+            try:
+                queue.put(file, timeout=10)
+            except Full: continue
+            i += 1
+            if n is not None and i >= n:
+                break
         try:
             file = next(iterator)
         except StopIteration:
